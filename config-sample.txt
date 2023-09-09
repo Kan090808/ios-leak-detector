@@ -1,0 +1,7 @@
+project_path:
+/Users/kan/Documents/project_name
+
+skip_path:
+/project_subfolder/folder_name
+
+only_print_leaks: false
