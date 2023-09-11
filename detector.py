@@ -54,12 +54,12 @@ def find_leaked_blocks(file_path):
         blocks = extract_blocks(func)
         # print(len(blocks))
         for block in blocks:
-          # 檢查 block 中的 "self" 前面是否有 "weak" 或 "strong"
-          if re.search(r'\b(?!weak|strong)\bself\b', block):
-              line_number = source[:source.index(func)].count('\n') + 1
-            #   if 'OLSCIMWebServicer+Message' in file_path:
-            #     print(block)
-              leaked_blocks.append((function_name.strip(), line_number))
+            # 檢查 block 中的 "self" 前面是否有 "weak" 或 "strong"
+            match = re.search(r'\b(?!weak|strong)\bself\b', block)
+            if match:
+                if count_char_before_index(block, '"', match.start()) % 2 == 0: #雙數表示不在""之間
+                    line_number = source[:source.index(func)].count('\n') + 1
+                    leaked_blocks.append((function_name.strip(), line_number))
         # print(" ")
 
     return leaked_blocks
@@ -119,6 +119,12 @@ def extract_blocks(s):
                 in_caret_sequence = False  # reset the flag
 
     return blocks
+
+def count_char_before_index(s, char, index):
+    """
+    Count the occurrences of 'char' in 's' before the given 'index'.
+    """
+    return s[:index].count(char)
 
 def main():
     global total_files_checked, total_functions_checked, total_functions_without_leaks, total_functions_with_leaks
