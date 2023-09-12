@@ -57,10 +57,14 @@ def find_leaked_blocks(file_path):
             # 檢查 block 中的 "self" 前面是否有 "weak" 或 "strong"
             match = re.search(r'\b(?!weak|strong)\bself\b', block)
             if match:
-                if count_char_before_index(block, '"', match.start()) % 2 == 0: #雙數表示不在""之間
-                    line_number = source[:source.index(func)].count('\n') + 1
-                    leaked_blocks.append((function_name.strip(), line_number))
-        # print(" ")
+                # 获取匹配所在的整行
+                line = block.split('\n')[block.count('\n', 0, match.start())]
+                
+                # 检查该行是否包含 //
+                if '//' not in line:
+                    if count_char_before_index(block, '"', match.start()) % 2 == 0: #雙數表示不在""之間
+                        line_number = source[:source.index(func)].count('\n') + 1
+                        leaked_blocks.append((function_name.strip(), line_number))
 
     return leaked_blocks
 
